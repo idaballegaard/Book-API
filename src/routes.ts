@@ -8,7 +8,9 @@ const router: Router = Router();
  * 
  */
 router.get('/', (req: Request, res: Response) => {
+    // connect
     res.status(200).send('Welcome to the BOOK API');
+    // disconnect
 });
 
 export default router;
