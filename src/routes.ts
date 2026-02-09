@@ -1,16 +1,17 @@
 import { Router, Request, Response } from 'express';
+import { createBook } from './controllers/bookController';
 
 const router: Router = Router();
-
-// get, post, put, delete (CRUD)
 
 /**
  * 
  */
 router.get('/', (req: Request, res: Response) => {
-    // connect
     res.status(200).send('Welcome to the BOOK API');
-    // disconnect
 });
+
+
+router.post('/books', createBook);
+
 
 export default router;
