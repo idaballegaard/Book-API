@@ -1,5 +1,11 @@
 import { Router, Request, Response } from 'express';
-import { createBook } from './controllers/bookController';
+import {
+    createBook,
+    getAllBooks,
+    getBooksById,
+    updateBookById,
+    deleteBookById
+} from './controllers/bookController';
 
 const router: Router = Router();
 
@@ -12,6 +18,9 @@ router.get('/', (req: Request, res: Response) => {
 
 
 router.post('/books', createBook);
-
+router.get('/books', getAllBooks);
+router.get('/books/:id', getBooksById);
+router.put('/books/:id', updateBookById);
+router.delete('/books/:id', deleteBookById);
 
 export default router;

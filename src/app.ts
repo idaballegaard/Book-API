@@ -14,6 +14,9 @@ const app: Application = express();
  */
 export function startServer() {
 
+    //JSON body parser middleware
+    app.use(express.json());
+
     // bind routes to the application
     app.use('/api', routes);
 
