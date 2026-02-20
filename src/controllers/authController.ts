@@ -15,6 +15,7 @@ import { userModel } from "../models/userModel";
 import { User } from "../interfaces/user";
 import { connect, disconnect } from "../repository/database";
 
+
 /**
  * Register a new user
  * @param req
@@ -58,7 +59,7 @@ export async function registerUser(req: Request, res: Response) {
 
         const savedUser = await userObject.save();
         res.status(200).json( { error: null, data: savedUser._id } );
-        
+
 
     } catch (error) {
         res.status(500).send("Error registering user. Error: " + error);
@@ -72,6 +73,69 @@ export async function registerUser(req: Request, res: Response) {
 
 
 // Login
+
+/**
+ * Login an existing user
+ * @param req 
+ * @param res
+ * @returns
+*/
+export async function loginUser(req: Request, res: Response) {
+
+    try {
+
+        // validate user login info
+        const { error } = validateUserLoginInfo(req.body);
+
+        if (error) {
+            res.status(400).json({ error: error.details[0].message });
+            return;
+        }
+
+        // find the user in the repository
+        await connect();
+
+        const user: User | null = await userModel.findOne ( { email: req.body.email } );
+
+        if (!user) {
+            res.status(400).json({ error: "Password or email is wrong." });
+            return;
+        }
+        else {
+            // create auth token and send it back
+            const validPassword: boolean = await bcrypt.compare(req.body.password, user.password);
+
+            if (!validPassword) {
+                res.status(400).json({ error: "Password or email is wrong." });
+                return;
+            }
+
+            const userId: string = user.id;
+            const token: string = jwt.sign(
+                {
+                    // Payload
+                    name: user.name,
+                    email: user.email,
+                    id: userId
+                },
+                process.env.TOKEN_SECRET as string,
+                { expiresIn: '2h' }
+            );
+
+            // attach the token and send it back to te client
+            res.
+            status(200).header("auth-token", token).json({ error: null, data: { userId, token } });
+        }
+
+    } catch (error) {
+        res.status(500).send("Error logging in user. Error: " + error);
+    }
+    finally {
+        await disconnect();
+    }
+};
+
+
 
 /**
  * Validae user registration info (name, email, password)
