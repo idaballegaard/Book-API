@@ -4,9 +4,9 @@ import {
     getAllBooks,
     getBooksById,
     updateBookById,
-    deleteBookById
+    deleteBookById,
 } from './controllers/bookController';
-import { registerUser } from './controllers/authController';
+import { loginUser, registerUser, verifyToken } from './controllers/authController';
 
 const router: Router = Router();
 
@@ -19,14 +19,17 @@ router.get('/', (req: Request, res: Response) => {
 
 // auth
 router.post('/user/register', registerUser)
+router.post('/user/login', loginUser)
 
 // create
-router.post('/books', createBook);
+router.post('/books', verifyToken, createBook);
 
 // gets
 router.get('/books', getAllBooks);
 router.get('/books/:id', getBooksById);
-router.put('/books/:id', updateBookById);
-router.delete('/books/:id', deleteBookById);
+
+// Upsate and delete
+router.put('/books/:id', verifyToken, updateBookById);
+router.delete('/books/:id', verifyToken, deleteBookById);
 
 export default router;
