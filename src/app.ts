@@ -2,6 +2,7 @@ import express, { Application, Request, Response } from 'express';
 import dotenvFlow from 'dotenv-flow';
 import { testConnection } from './repository/database';
 import routes from './routes';
+import cors from 'cors';
 
 
 dotenvFlow.config();
@@ -10,10 +11,26 @@ dotenvFlow.config();
 const app: Application = express();
 
 /**
- * 
+ * Start the server
  */
 export function startServer() {
+    
+    app.use(cors({
 
+        // Allow request from any origin
+        origin: "*", // localhost and render in an array
+
+        // allow HTTP methods
+        methods: ["GET", "PUT", "POST", "DELETE"],
+
+        // allow headers
+        allowedHeaders: ['auth-token', 'Origin', 'X-Requested-Width', 'Content-Type', 'Accept'],
+
+        // allow credentials
+        credentials:true
+    }))
+
+    
     //JSON body parser middleware
     app.use(express.json());
 

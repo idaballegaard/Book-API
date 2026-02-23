@@ -5,6 +5,8 @@ import {
     getBooksById,
     updateBookById,
     deleteBookById,
+    getBooksByQuery,
+    getBooksByQueryGeneric
 } from './controllers/bookController';
 import { loginUser, registerUser, verifyToken } from './controllers/authController';
 
@@ -27,6 +29,9 @@ router.post('/books', verifyToken, createBook);
 // gets
 router.get('/books', getAllBooks);
 router.get('/books/:id', getBooksById);
+
+router.post('/books/query', getBooksByQueryGeneric);
+router.get('/books/:key/:value', verifyToken, getBooksByQuery);
 
 // Upsate and delete
 router.put('/books/:id', verifyToken, updateBookById);

@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { bookModel } from '../models/bookModel';
 import { connect, disconnect } from '../repository/database';
+import { buildDynamicQuery } from './dynamicQueryBuilder';
 
 // CRUD - create, read/get, update, delete
 
@@ -130,6 +131,68 @@ export async function deleteBookById(req: Request, res: Response) {
     }
     catch (error) {
         res.status(500).send("Error deleting book by ID. Error: " + error);
+    }
+    finally {
+        await disconnect();
+    }
+}
+
+
+
+/** 
+* Retrieves a BOOK by query from the database
+* @param req
+* @param res
+*/
+export async function getBooksByQuery(req: Request, res: Response): Promise<void> {
+
+    try {
+        await connect();
+
+        // api/books/key/value
+
+
+        const key: any = req.params.key;
+        const value: any = req.params.value;
+        
+
+        const result = await bookModel.find({ [key]: {$regex: value, $options: 'i'} } ); 
+
+        res.status(200).json(result);
+
+    }
+    catch (err) {
+
+        res.status(500).json("error retrieving book by query." + err );
+    }
+    finally {
+        await disconnect();
+    }
+}
+
+/** 
+* Retrieves a BOOK by query from the database
+* @param req
+* @param res
+*/
+export async function getBooksByQueryGeneric(req: Request, res: Response): Promise<void> {
+
+    try {
+        await connect();
+
+        // api/books/query
+
+       const body = req.body; 
+        
+
+        const result = await bookModel.find(buildDynamicQuery(bookModel, body)); 
+
+        res.status(200).json(result);
+
+    }
+    catch (err) {
+
+        res.status(500).json("error retrieving book by query." + err );
     }
     finally {
         await disconnect();
