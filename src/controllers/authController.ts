@@ -16,6 +16,7 @@ import { User } from "../interfaces/user";
 import { connect, disconnect } from "../repository/database";
 
 
+
 /**
  * Register a new user
  * @param req
@@ -136,6 +137,7 @@ export async function loginUser(req: Request, res: Response) {
 };
 
 
+
 /**
  * Middleware logic to verify the client JWT token
  * @param req
@@ -164,7 +166,6 @@ export function verifyToken(req: Request, res: Response, next: NextFunction) {
 
 
 
-
 /**
  * Validae user registration info (name, email, password)
  * @param data 
@@ -179,6 +180,7 @@ export function validateUserRegistrationInfo(data: User): ValidationResult {
 
     return schema.validate(data);
 }
+
 
 
 /**
