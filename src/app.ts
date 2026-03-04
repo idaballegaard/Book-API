@@ -10,26 +10,35 @@ dotenvFlow.config();
 // create express application
 const app: Application = express();
 
+
+/**
+ * Setup CORS handling for the application
+ */
+function setUpCors() {
+    app.use(cors({
+
+        // Allow request from any origin
+        origin: "*",
+
+        // Allow methods GET, PUT, POST, DELETE
+        methods: 'GET, PUT, POST, DELETE',
+
+        // Allow headers
+        allowedHeaders: ['auth-token', 'Origin', 'X-Requested-Width', 'Content-Type', 'Accept'],
+
+        // Allow credentials
+        credentials:true
+    }))
+}
+
+
 /**
  * Start the server
  */
 export function startServer() {
-    
-    app.use(cors({
 
-        // Allow request from any origin
-        origin: "*", // localhost and render in an array
-
-        // allow HTTP methods
-        methods: ["GET", "PUT", "POST", "DELETE"],
-
-        // allow headers
-        allowedHeaders: ['auth-token', 'Origin', 'X-Requested-Width', 'Content-Type', 'Accept'],
-
-        // allow credentials
-        credentials:true
-    }))
-
+    // setup CORS handling
+    setUpCors();
     
     //JSON body parser middleware
     app.use(express.json());
