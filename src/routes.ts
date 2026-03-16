@@ -25,7 +25,7 @@ const router: Router = Router();
  *        description: A welcome message is returned.
  */
 router.get('/', (req: Request, res: Response) => {
-    res.status(200).send('Welcome to the BOOK API');
+    res.status(200).send({message: 'Welcome to the BOOK API'});
 });
 
 // auth

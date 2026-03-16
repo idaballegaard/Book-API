@@ -25,7 +25,7 @@ export async function connect() {
 
         if (mongoose.connection.db) {
             await mongoose.connection.db.admin().command({ ping: 1});
-            console.log("Connected to the database successfully");
+            //console.log("Connected to the database successfully");
         }
         else {
             throw new Error("Database connection is not established");
