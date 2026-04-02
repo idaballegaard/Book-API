@@ -40,9 +40,7 @@
 
           <div class="mt-4">
             <button
-              @click="$router.push(`/books/${book.id}`)"
-              class="bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-600"
-            >
+              @click="$router.push(`/books/${book.id}`)" class="bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-600">
               Se detaljer
             </button>
           </div>
