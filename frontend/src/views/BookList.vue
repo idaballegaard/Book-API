@@ -1,66 +1,86 @@
-<template>
-  <div>
-    <h2 class="text-2xl font-bold mb-4">Books</h2>
-
-    <div v-if="loading" class="text-center">Loading...</div>
-
-    <div v-else-if="error" class="text-center text-red-500">
-      {{ error }}
-    </div>
-
-    <div v-else class="flex flex-wrap -mx-2">
-      <div
-        v-for="book in books"
-        :key="book.id"
-        class="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 p-2"
-      >
-        <div class="bg-white p-4 rounded-lg shadow-md">
-          
-          <img
-            :src="book.imageUrl"
-            alt="Book cover"
-            class="w-full h-48 object-cover mb-4 rounded-lg"
-          />
-
-          <h3 class="text-lg text-gray-700 font-semibold mb-2">
-            {{ book.title }}
-          </h3>
-
-          <p class="text-gray-600">
-            {{ book.author }}
-          </p>
-
-          <p class="text-gray-700 mt-2">
-            {{ book.description }}
-          </p>
-
-          <p class="text-sm text-gray-500 mt-2">
-            Genre: {{ book.genre }}
-          </p>
-
-          <div class="mt-4">
-            <button
-              @click="$router.push(`/books/${book.id}`)" class="bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-600">
-              Se detaljer
-            </button>
-          </div>
-
-        </div>
-      </div>
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
 import { onMounted } from 'vue'
-import { useBooks } from '../modules/useBooks' // ny composable
+import { useRouter } from 'vue-router'
+import { useBooks } from '../modules/useBooks'
 
+const router = useRouter()
 const { loading, error, books, fetchBooks } = useBooks()
 
 onMounted(() => {
   fetchBooks()
 })
+
+const goToBook = (id: string) => {
+  router.push(`/books/${id}`)
+}
 </script>
+
+<template>
+  <div class="bg-gradient-to-br from-gray-900 to-black min-h-screen text-white p-8">
+    
+    <!-- 🔥 Title -->
+    <h1 class="text-3xl font-bold mb-8 text-purple-400">
+      📚 Udforsk bøger
+    </h1>
+
+    <!-- Loading -->
+    <div v-if="loading" class="text-center text-gray-400">
+      Loading...
+    </div>
+
+    <!-- Error -->
+    <div v-else-if="error" class="text-center text-red-500">
+      {{ error }}
+    </div>
+
+    <!-- 📚 Grid -->
+    <div v-else class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+      
+      <div
+        v-for="book in books"
+        :key="book.id"
+        @click="goToBook(book._id)"
+        class="cursor-pointer group"
+      >
+        
+        <!-- Card -->
+        <div class="bg-gray-800 rounded-xl overflow-hidden shadow-md hover:shadow-2xl transition duration-300">
+          
+          <!-- Cover -->
+          <div class="overflow-hidden">
+            <img
+              :src="book.imageUrl"
+              alt="Book cover"
+              class="w-full h-64 object-cover group-hover:scale-105 transition duration-300"
+            />
+          </div>
+
+          <!-- Info -->
+          <div class="p-3">
+            
+            <h2 class="text-sm font-semibold line-clamp-2">
+              {{ book.title }}
+            </h2>
+
+            <p class="text-xs text-gray-400">
+              {{ book.author }}
+            </p>
+
+            <!-- Rating -->
+            <p class="text-purple-400 text-sm mt-1">
+              ⭐ {{ book.rating }}
+            </p>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+</template>
 
 <style scoped>
 </style>
