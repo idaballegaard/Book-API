@@ -1,75 +1,154 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { useBooks } from '../modules/useBooks'
+import { onMounted, computed } from 'vue'
+// import { useRouter } from 'vue-router'
+// import { useBooks } from '../modules/useBooks'
 
-const router = useRouter()
+// 🔥 Hent bøger
+/*const router = useRouter()
 const { loading, error, books, fetchBooks } = useBooks()
 
 onMounted(() => {
   fetchBooks()
-})
+})*/ 
+
+// Test data
+import { ref } from 'vue'
+
+const loading = ref(false)
+const error = ref(null)
+
+const books = ref([
+  {
+    _id: '1',
+    title: 'Harry Potter',
+    author: 'J.K. Rowling',
+    genre: 'Fantasy',
+    rating: 4.8,
+    imageUrl: 'https://via.placeholder.com/200x300'
+  },
+  {
+    _id: '2',
+    title: 'The Hobbit',
+    author: 'J.R.R. Tolkien',
+    genre: 'Fantasy',
+    rating: 4.7,
+    imageUrl: 'https://via.placeholder.com/200x300'
+  },
+  {
+    _id: '3',
+    title: 'Dune',
+    author: 'Frank Herbert',
+    genre: 'Sci-Fi',
+    rating: 4.6,
+    imageUrl: 'https://via.placeholder.com/200x300'
+  },
+  {
+    _id: '4',
+    title: '1984',
+    author: 'George Orwell',
+    genre: 'Sci-Fi',
+    rating: 4.5,
+    imageUrl: 'https://via.placeholder.com/200x300'
+  },
+  {
+    _id: '5',
+    title: 'Atomic Habits',
+    author: 'James Clear',
+    genre: 'Self Development',
+    rating: 4.9,
+    imageUrl: 'https://via.placeholder.com/200x300'
+  }
+])
+
 
 const goToBook = (id: string) => {
   router.push(`/books/${id}`)
 }
+
+// 🔥 Gruppér efter genre
+const groupedBooks = computed(() => {
+  return books.value.reduce((acc: any, book: any) => {
+    const genre = book.genre || 'Other'
+    if (!acc[genre]) acc[genre] = []
+    acc[genre].push(book)
+    return acc
+  }, {})
+})
 </script>
 
 <template>
-  <div class="bg-gradient-to-br from-gray-900 to-black min-h-screen text-white p-8">
+  <div class="p-8 max-w-6xl mx-auto">
     
     <!-- 🔥 Title -->
     <h1 class="text-3xl font-bold mb-8 text-purple-400">
-      📚 Udforsk bøger
+      📚 Explore Books
     </h1>
 
-    <!-- Loading -->
+    <!-- ⏳ Loading -->
     <div v-if="loading" class="text-center text-gray-400">
       Loading...
     </div>
 
-    <!-- Error -->
+    <!-- ❌ Error -->
     <div v-else-if="error" class="text-center text-red-500">
       {{ error }}
     </div>
 
-    <!-- 📚 Grid -->
-    <div v-else class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-      
+    <!-- ✅ Content -->
+    <div v-else>
+
+      <!-- 🎯 GENRES -->
       <div
-        v-for="book in books"
-        :key="book.id"
-        @click="goToBook(book._id)"
-        class="cursor-pointer group"
+        v-for="(books, genre) in groupedBooks"
+        :key="genre"
+        class="mb-12"
       >
         
-        <!-- Card -->
-        <div class="bg-gray-800 rounded-xl overflow-hidden shadow-md hover:shadow-2xl transition duration-300">
-          
-          <!-- Cover -->
-          <div class="overflow-hidden">
-            <img
-              :src="book.imageUrl"
-              alt="Book cover"
-              class="w-full h-64 object-cover group-hover:scale-105 transition duration-300"
-            />
-          </div>
+        <!-- Genre title -->
+        <h2 class="text-xl font-semibold text-purple-400 mb-4">
+          {{ genre }}
+        </h2>
 
-          <!-- Info -->
-          <div class="p-3">
+        <!-- 📚 GRID -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+
+          <div
+            v-for="book in books"
+            :key="book._id"
+            @click="goToBook(book._id)"
+            class="cursor-pointer group"
+          >
             
-            <h2 class="text-sm font-semibold line-clamp-2">
-              {{ book.title }}
-            </h2>
+            <!-- CARD -->
+            <div class="bg-gray-800 rounded-xl overflow-hidden shadow-md hover:shadow-2xl transition duration-300">
+              
+              <!-- COVER -->
+              <div class="overflow-hidden">
+                <img
+                  :src="book.imageUrl"
+                  alt="Book cover"
+                  class="w-full h-64 object-cover group-hover:scale-105 transition duration-300"
+                />
+              </div>
 
-            <p class="text-xs text-gray-400">
-              {{ book.author }}
-            </p>
+              <!-- INFO -->
+              <div class="p-3">
+                
+                <h3 class="text-sm font-semibold line-clamp-2 group-hover:text-purple-400 transition">
+                  {{ book.title }}
+                </h3>
 
-            <!-- Rating -->
-            <p class="text-purple-400 text-sm mt-1">
-              ⭐ {{ book.rating }}
-            </p>
+                <p class="text-xs text-gray-400">
+                  {{ book.author }}
+                </p>
+
+                <p class="text-purple-400 text-sm mt-1">
+                  ⭐ {{ book.rating }}
+                </p>
+
+              </div>
+
+            </div>
 
           </div>
 

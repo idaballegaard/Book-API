@@ -27,16 +27,16 @@ const router = useRouter()
 
         <!-- Navigation -->
         <div class="flex items-center gap-6 text-sm">
-          <button 
-            @click="router.push('/')"
-            class="hover:text-purple-400 transition"
-          >
-            Udforsk
-          </button>
+          <router-link to="/" class="hover:text-purple-400 transition">
+            Home
+          </router-link>
 
-          <button class="text-gray-500 cursor-default">
+          <router-link to="/books" class="hover:text-purple-400 transition">
             Genrer
-          </button>
+          </router-link>
+          <router-link to="/login" class="hover:text-purple-400 transition">
+            Login
+          </router-link>
         </div>
 
       </div>
