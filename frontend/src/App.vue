@@ -5,7 +5,7 @@ const router = useRouter()
 </script>
 
 <template>
-  <div class="min-h-screen text-white">
+  <div class="min-h-screen flex flex-col text-white bg-gradient-to-br from-gray-900 to-black">
     
     <!-- 🔝 NAVBAR -->
     <nav class="bg-gray-800 shadow-md">
@@ -42,10 +42,37 @@ const router = useRouter()
       </div>
     </nav>
 
-    <!-- 🔥 CONTENT (NO WRAPPER BUGS) -->
-    <main class="bg-gradient-to-br from-gray-900 to-black min-h-screen">
+    <!-- 🔥 CONTENT -->
+    <main class="flex-1">
       <router-view />
     </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-gray-900 border-t border-gray-800 text-white pb-8">
+      <div class="max-w-6xl mx-auto px-6 pt-8">
+
+        <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+          <div class="text-xl font-semibold text-purple-400">
+            📚 BookApp
+          </div>
+
+          <div class="flex gap-6 text-gray-400 text-sm">
+            <a href="#" class="hover:text-white transition">Home</a>
+            <a href="#" class="hover:text-white transition">Explore</a>
+            <a href="#" class="hover:text-white transition">About</a>
+            <a href="#" class="hover:text-white transition">Contact</a>
+          </div>
+        </div>
+
+        <div class="border-t border-gray-800 my-6"></div>
+
+        <div class="flex flex-col md:flex-row justify-between items-center text-gray-500 text-sm gap-2">
+          <p>© {{ new Date().getFullYear() }} BookApp. All rights reserved.</p>
+          <p>Built with Vue & Tailwind</p>
+        </div>
+
+      </div>
+    </footer>
 
   </div>
 </template>

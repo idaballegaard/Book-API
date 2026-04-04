@@ -26,7 +26,7 @@ onMounted(() => {
 
 <template>
   <!-- 🌫️ BACKGROUND -->
-  <div class="bg-gradient-to-b from-gray-900 to-black min-h-screen py-12 text-white">
+  <div class="bg-gradient-to-b from-gray-900 to-black pt-12 pb-25 text-white">
     
     <!-- 📦 CONTAINER -->
     <div v-if="book" class="max-w-5xl mx-auto px-6">
