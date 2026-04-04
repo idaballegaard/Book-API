@@ -1,7 +1,32 @@
 <script setup lang="ts">
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
+import { ref, watch } from 'vue'
 
 const router = useRouter()
+const route = useRoute()
+
+const user = ref(null)
+
+const loadUser = () => {
+  user.value = JSON.parse(localStorage.getItem('user') || 'null')
+}
+
+// læs user første gang
+loadUser()
+
+// læs user igen når route skifter
+watch(
+  () => route.fullPath,
+  () => {
+    loadUser()
+  }
+)
+
+const logout = () => {
+  localStorage.removeItem('user')
+  user.value = null
+  router.push('/login')
+}
 </script>
 
 <template>
@@ -25,8 +50,9 @@ const router = useRouter()
           </span>
         </div>
 
-        <!-- Navigation -->
+        <!-- Navigation links -->
         <div class="flex items-center gap-6 text-sm">
+
           <router-link to="/" class="hover:text-purple-400 transition">
             Home
           </router-link>
@@ -34,9 +60,32 @@ const router = useRouter()
           <router-link to="/books" class="hover:text-purple-400 transition">
             Genrer
           </router-link>
-          <router-link to="/login" class="hover:text-purple-400 transition">
-            Login
+
+          <router-link to="/profile" class="hover:text-purple-400 transition">
+            Profile
           </router-link>
+          
+          <!-- ✅ Hvis user findes -->
+          <template v-if="user">
+            <span class="text-gray-400 text-sm">
+              {{ user.email }}
+            </span>
+
+            <button
+              @click="logout"
+              class="hover:text-purple-400 transition"
+            >
+              Logout
+            </button>
+          </template>
+
+          <!-- ❌ Hvis user IKKE findes -->
+          <template v-else>
+            <router-link to="/login" class="hover:text-purple-400 transition">
+              Login
+            </router-link>
+          </template>
+
         </div>
 
       </div>

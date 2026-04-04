@@ -1,19 +1,11 @@
 <script setup lang="ts">
-import { onMounted, computed } from 'vue'
-// import { useRouter } from 'vue-router'
-// import { useBooks } from '../modules/useBooks'
+import { computed, ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { toggleFavorite, isFavorite } from '../modules/useFavorites'
 
-// 🔥 Hent bøger
-/*const router = useRouter()
-const { loading, error, books, fetchBooks } = useBooks()
-
-onMounted(() => {
-  fetchBooks()
-})*/ 
+const router = useRouter()
 
 // Test data
-import { ref } from 'vue'
-
 const loading = ref(false)
 const error = ref(null)
 
@@ -60,6 +52,9 @@ const books = ref([
   }
 ])
 
+const handleFavorite = (id: string) => {
+  toggleFavorite(id)
+}
 
 const goToBook = (id: string) => {
   router.push(`/books/${id}`)
@@ -118,10 +113,19 @@ const groupedBooks = computed(() => {
             @click="goToBook(book._id)"
             class="cursor-pointer group"
           >
-            
+
             <!-- CARD -->
-            <div class="bg-gray-800 rounded-xl overflow-hidden shadow-md hover:shadow-2xl transition duration-300">
+            <div class="relative bg-gray-800 rounded-xl overflow-hidden shadow-md hover:shadow-2xl transition duration-300">
               
+              <!-- ❤️ FAVORITE -->
+              <button
+                @click.stop="handleFavorite(book._id)"
+                class="absolute top-2 right-2 text-xl z-10"
+              >
+                <span v-if="isFavorite(book._id)">❤️</span>
+                <span v-else>🤍</span>
+              </button>
+
               <!-- COVER -->
               <div class="overflow-hidden">
                 <img
@@ -133,7 +137,6 @@ const groupedBooks = computed(() => {
 
               <!-- INFO -->
               <div class="p-3">
-                
                 <h3 class="text-sm font-semibold line-clamp-2 group-hover:text-purple-400 transition">
                   {{ book.title }}
                 </h3>
@@ -145,7 +148,6 @@ const groupedBooks = computed(() => {
                 <p class="text-purple-400 text-sm mt-1">
                   ⭐ {{ book.rating }}
                 </p>
-
               </div>
 
             </div>

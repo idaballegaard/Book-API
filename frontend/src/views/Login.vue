@@ -20,9 +20,7 @@ const login = () => {
 
 <template>
   <div class="flex items-center justify-center min-h-[70vh] px-6">
-
     <div class="bg-gray-800 p-8 rounded-2xl shadow-xl w-full max-w-md">
-
       <h1 class="text-2xl font-bold mb-6 text-purple-400">
         Login
       </h1>
@@ -51,8 +49,6 @@ const login = () => {
       >
         Login
       </button>
-
     </div>
-
   </div>
 </template>
