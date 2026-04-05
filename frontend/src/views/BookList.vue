@@ -1,56 +1,64 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { onMounted, computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { toggleFavorite, isFavorite } from '../modules/useFavorites'
 
+import { toggleFavorite, isFavorite } from '../modules/useFavorites'
+import { useBooks } from '../modules/useBooks'
+
+// 🔥 Hent bøger
 const router = useRouter()
+const { loading, error, books, fetchBooks } = useBooks()
+
+onMounted(() => {
+  fetchBooks()
+})
 
 // Test data
-const loading = ref(false)
-const error = ref(null)
+// const loading = ref(false)
+// const error = ref(null)
 
-const books = ref([
-  {
-    _id: '1',
-    title: 'Harry Potter',
-    author: 'J.K. Rowling',
-    genre: 'Fantasy',
-    rating: 4.8,
-    imageUrl: 'https://via.placeholder.com/200x300'
-  },
-  {
-    _id: '2',
-    title: 'The Hobbit',
-    author: 'J.R.R. Tolkien',
-    genre: 'Fantasy',
-    rating: 4.7,
-    imageUrl: 'https://via.placeholder.com/200x300'
-  },
-  {
-    _id: '3',
-    title: 'Dune',
-    author: 'Frank Herbert',
-    genre: 'Sci-Fi',
-    rating: 4.6,
-    imageUrl: 'https://via.placeholder.com/200x300'
-  },
-  {
-    _id: '4',
-    title: '1984',
-    author: 'George Orwell',
-    genre: 'Sci-Fi',
-    rating: 4.5,
-    imageUrl: 'https://via.placeholder.com/200x300'
-  },
-  {
-    _id: '5',
-    title: 'Atomic Habits',
-    author: 'James Clear',
-    genre: 'Self Development',
-    rating: 4.9,
-    imageUrl: 'https://via.placeholder.com/200x300'
-  }
-])
+// const books = ref([
+//   {
+//     _id: '1',
+//     title: 'Harry Potter',
+//     author: 'J.K. Rowling',
+//     genre: 'Fantasy',
+//     rating: 4.8,
+//     imageUrl: 'https://via.placeholder.com/200x300'
+//   },
+//   {
+//     _id: '2',
+//     title: 'The Hobbit',
+//     author: 'J.R.R. Tolkien',
+//     genre: 'Fantasy',
+//     rating: 4.7,
+//     imageUrl: 'https://via.placeholder.com/200x300'
+//   },
+//   {
+//     _id: '3',
+//     title: 'Dune',
+//     author: 'Frank Herbert',
+//     genre: 'Sci-Fi',
+//     rating: 4.6,
+//     imageUrl: 'https://via.placeholder.com/200x300'
+//   },
+//   {
+//     _id: '4',
+//     title: '1984',
+//     author: 'George Orwell',
+//     genre: 'Sci-Fi',
+//     rating: 4.5,
+//     imageUrl: 'https://via.placeholder.com/200x300'
+//   },
+//   {
+//     _id: '5',
+//     title: 'Atomic Habits',
+//     author: 'James Clear',
+//     genre: 'Self Development',
+//     rating: 4.9,
+//     imageUrl: 'https://via.placeholder.com/200x300'
+//   }
+// ])
 
 const handleFavorite = (id: string) => {
   toggleFavorite(id)
