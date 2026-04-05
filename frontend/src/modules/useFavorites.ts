@@ -1,3 +1,5 @@
+import { getStoredUser } from './useAuth'
+
 export const getFavorites = (email: string) => {
   const data = JSON.parse(localStorage.getItem('favorites') || '{}')
   return data[email] || []
@@ -10,7 +12,7 @@ export const saveFavorites = (email: string, favs: string[]) => {
 }
 
 export const toggleFavorite = (id: string) => {
-  const user = JSON.parse(localStorage.getItem('user') || 'null')
+  const user = getStoredUser()
   if (!user) return
 
   let favs = getFavorites(user.email)
@@ -25,7 +27,7 @@ export const toggleFavorite = (id: string) => {
 }
 
 export const isFavorite = (id: string) => {
-  const user = JSON.parse(localStorage.getItem('user') || 'null')
+  const user = getStoredUser()
   if (!user) return false
 
   const favs = getFavorites(user.email)

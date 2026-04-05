@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useRouter, useRoute } from 'vue-router'
 import { ref, watch } from 'vue'
+import { clearAuthState, getStoredUser } from './modules/useAuth'
 
 const router = useRouter()
 const route = useRoute()
@@ -8,7 +9,7 @@ const route = useRoute()
 const user = ref(null)
 
 const loadUser = () => {
-  user.value = JSON.parse(localStorage.getItem('user') || 'null')
+  user.value = getStoredUser()
 }
 
 // læs user første gang
@@ -23,7 +24,7 @@ watch(
 )
 
 const logout = () => {
-  localStorage.removeItem('user')
+  clearAuthState()
   user.value = null
   router.push('/login')
 }

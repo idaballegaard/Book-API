@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import BookDetail from '../views/BookDetail.vue'
 import BookList from '../views/BookList.vue'
+import { isAuthenticated } from '../modules/useAuth'
 import Home from '../views/Home.vue'
 import Login from '../views/Login.vue'
 import Profile from '../views/Profile.vue'
@@ -42,10 +43,8 @@ const router = createRouter({
 })
 
 // 🔒 ROUTE GUARD
-router.beforeEach((to, from, next) => {
-  const user = localStorage.getItem('user')
-
-  if (to.meta.requiresAuth && !user) {
+router.beforeEach((to, _, next) => {
+  if (to.meta.requiresAuth && !isAuthenticated()) {
     next('/login')
   } else {
     next()

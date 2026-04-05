@@ -113,7 +113,17 @@ export async function loginUser(req: Request, res: Response) {
       res
         .status(200)
         .header("auth-token", token)
-        .json({ error: null, data: { userId, token } });
+        .json({
+          error: null,
+          data: {
+            token,
+            user: {
+              id: userId,
+              name: user.name,
+              email: user.email,
+            },
+          },
+        });
     }
   } catch (error) {
     res.status(500).send("Error logging in user. Error: " + error);

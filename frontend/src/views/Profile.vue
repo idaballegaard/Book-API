@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { getFavorites } from '../modules/useFavorites'
+import { clearAuthState, getStoredUser } from '../modules/useAuth'
 
 const router = useRouter()
 
@@ -45,7 +46,7 @@ const allBooks = [
 const favoriteBooks = ref<any[]>([])
 
 onMounted(() => {
-  user.value = JSON.parse(localStorage.getItem('user') || 'null')
+  user.value = getStoredUser()
 
   if (!user.value) {
     router.push('/login')
@@ -65,7 +66,7 @@ const goToBook = (id: string) => {
 }
 
 const logout = () => {
-  localStorage.removeItem('user')
+  clearAuthState()
   router.push('/login')
 }
 </script>
