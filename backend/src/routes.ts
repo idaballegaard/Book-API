@@ -7,6 +7,7 @@ import {
   deleteBookById,
   getBooksByQuery,
   getBooksByQueryGeneric,
+  getHighestRatedBooks
 } from "./controllers/bookController";
 import {
   loginUser,
@@ -143,6 +144,25 @@ router.post("/books", verifyToken, createBook);
 
 /**
  * @swagger
+ * /books/highest-rated:
+ *   get:
+ *     tags:
+ *       - Book Routes
+ *     summary: Get highest rated books
+ *     description: Retrieves a list of the highest rated books in the database.
+ *     responses:
+ *       200:
+ *         description: A list of the highest rated books is returned.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Book'
+ */
+
+/**
+ * @swagger
  * /books/{id}:
  *   get:
  *     tags:
@@ -165,6 +185,7 @@ router.post("/books", verifyToken, createBook);
  *               $ref: '#/components/schemas/Book'
  */
 router.get("/books", getAllBooks);
+router.get("/books/highest-rated", getHighestRatedBooks);
 router.get("/books/:id", getBooksById);
 
 /**

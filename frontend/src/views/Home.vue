@@ -1,25 +1,16 @@
 <script setup lang="ts">
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useBooks } from '../modules/useBooks'
 
 const router = useRouter()
+const { fetchHighestRatedBooks } = useBooks()
+const featuredBooks = ref<any>(null)
 
-const featuredBooks = [
-  {
-    _id: '1',
-    title: 'Harry Potter',
-    imageUrl: 'https://via.placeholder.com/200x300'
-  },
-  {
-    _id: '2',
-    title: 'The Hobbit',
-    imageUrl: 'https://via.placeholder.com/200x300'
-  },
-  {
-    _id: '3',
-    title: 'Dune',
-    imageUrl: 'https://via.placeholder.com/200x300'
-  }
-]
+onMounted(async () => {
+  featuredBooks.value = await fetchHighestRatedBooks()
+  console.log('Featured Books:', featuredBooks.value)
+})
 </script>
 
 <template>
@@ -61,7 +52,7 @@ const featuredBooks = [
     <!-- 📚 FEATURED -->
     <div>
       <h2 class="text-2xl font-semibold text-purple-400 mb-6">
-        Featured Books
+        Highest Rated Books
       </h2>
 
       <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">

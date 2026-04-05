@@ -1,26 +1,30 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
+import { useBooks } from '../modules/useBooks'
 
 const route = useRoute()
+const { fetchBookById } = useBooks()
 const book = ref<any>(null)
 
-onMounted(() => {
-  const id = route.params.id
+onMounted(async () => {
+  const id = route.params.id as string
   
-  book.value = {
-    id,
-    title: 'Harry Potter and the Philosopher\'s Stone',
-    author: 'J.K. Rowling',
-    genre: 'Fantasy',
-    description:
-      'An orphaned boy discovers that he is a wizard and begins his journey at Hogwarts.',
-    rating: 4.8,
-    imageUrl: 'https://via.placeholder.com/300x450',
-    pages: 320,
-    publishedDate: '1997-06-26',
-    _reviewedBy: '123'
-  }
+  book.value = await fetchBookById(id)
+  
+  // book.value = {
+  //   id,
+  //   title: 'Harry Potter and the Philosopher\'s Stone',
+  //   author: 'J.K. Rowling',
+  //   genre: 'Fantasy',
+  //   description:
+  //     'An orphaned boy discovers that he is a wizard and begins his journey at Hogwarts.',
+  //   rating: 4.8,
+  //   imageUrl: 'https://via.placeholder.com/300x450',
+  //   pages: 320,
+  //   publishedDate: '1997-06-26',
+  //   _reviewedBy: '123'
+  // }
 })
 </script>
 

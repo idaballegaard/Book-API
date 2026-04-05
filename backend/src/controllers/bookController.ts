@@ -171,3 +171,22 @@ export async function getBooksByQueryGeneric(
     await disconnect();
   }
 }
+
+/**
+ * Retrieves the highest rated books from the data source
+ * @param req
+ * @param res
+ */
+export async function getHighestRatedBooks(req: Request, res: Response) {
+  try {
+    await connect();
+
+    const result = await bookModel.find({}).sort({ rating: -1 }).limit(4);
+
+    res.status(200).json(result);
+  } catch (err) {
+    res.status(500).json("error retrieving highest rated books." + err);
+  } finally {
+    await disconnect();
+  }
+}

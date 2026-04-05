@@ -30,9 +30,25 @@ export function useBooks() {
       const response = await fetch(`http://localhost:4000/api/books/${id}`)
       const data = await response.json()
 
-      books.value = [data] // Assuming the API returns a single book object
+      return data[0];
     } catch (err) {
       error.value = 'Kunne ikke hente bogen'
+    } finally {
+      loading.value = false
+    }
+  }
+
+  const fetchHighestRatedBooks = async () => {
+    loading.value = true
+    error.value = null
+    
+    try {
+      const response = await fetch('http://localhost:4000/api/books/highest-rated')
+      const data = await response.json()
+
+      return data;
+    } catch (err) {
+      error.value = 'Kunne ikke hente de højst ratede bøger'
     } finally {
       loading.value = false
     }
@@ -43,6 +59,7 @@ export function useBooks() {
     loading,
     error,
     fetchBooks,
-    fetchBookById
+    fetchBookById,
+    fetchHighestRatedBooks
   }
 }

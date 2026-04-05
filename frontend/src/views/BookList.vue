@@ -18,46 +18,46 @@ onMounted(() => {
 // const error = ref(null)
 
 // const books = ref([
-//   {
-//     _id: '1',
-//     title: 'Harry Potter',
-//     author: 'J.K. Rowling',
-//     genre: 'Fantasy',
-//     rating: 4.8,
-//     imageUrl: 'https://via.placeholder.com/200x300'
-//   },
-//   {
-//     _id: '2',
-//     title: 'The Hobbit',
-//     author: 'J.R.R. Tolkien',
-//     genre: 'Fantasy',
-//     rating: 4.7,
-//     imageUrl: 'https://via.placeholder.com/200x300'
-//   },
-//   {
-//     _id: '3',
-//     title: 'Dune',
-//     author: 'Frank Herbert',
-//     genre: 'Sci-Fi',
-//     rating: 4.6,
-//     imageUrl: 'https://via.placeholder.com/200x300'
-//   },
-//   {
-//     _id: '4',
-//     title: '1984',
-//     author: 'George Orwell',
-//     genre: 'Sci-Fi',
-//     rating: 4.5,
-//     imageUrl: 'https://via.placeholder.com/200x300'
-//   },
-//   {
-//     _id: '5',
-//     title: 'Atomic Habits',
-//     author: 'James Clear',
-//     genre: 'Self Development',
-//     rating: 4.9,
-//     imageUrl: 'https://via.placeholder.com/200x300'
-//   }
+  // {
+  //   _id: '1',
+  //   title: 'Harry Potter',
+  //   author: 'J.K. Rowling',
+  //   genre: 'Fantasy',
+  //   rating: 4.8,
+  //   imageUrl: 'https://via.placeholder.com/200x300'
+  // },
+  // {
+  //   _id: '2',
+  //   title: 'The Hobbit',
+  //   author: 'J.R.R. Tolkien',
+  //   genre: 'Fantasy',
+  //   rating: 4.7,
+  //   imageUrl: 'https://via.placeholder.com/200x300'
+  // },
+  // {
+  //   _id: '3',
+  //   title: 'Dune',
+  //   author: 'Frank Herbert',
+  //   genre: 'Sci-Fi',
+  //   rating: 4.6,
+  //   imageUrl: 'https://via.placeholder.com/200x300'
+  // },
+  // {
+  //   _id: '4',
+  //   title: '1984',
+  //   author: 'George Orwell',
+  //   genre: 'Sci-Fi',
+  //   rating: 4.5,
+  //   imageUrl: 'https://via.placeholder.com/200x300'
+  // },
+  // {
+  //   _id: '5',
+  //   title: 'Atomic Habits',
+  //   author: 'James Clear',
+  //   genre: 'Self Development',
+  //   rating: 4.9,
+  //   imageUrl: 'https://via.placeholder.com/200x300'
+  // }
 // ])
 
 const handleFavorite = (id: string) => {
