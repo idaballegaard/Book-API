@@ -1,35 +1,84 @@
-import { getStoredUser } from './useAuth'
+import { ref } from 'vue'
+import { getAuthToken } from './useAuth'
 
-export const getFavorites = (email: string) => {
-  const data = JSON.parse(localStorage.getItem('favorites') || '{}')
-  return data[email] || []
-}
+const API_BASE_URL = 'http://localhost:4000/api'
 
-export const saveFavorites = (email: string, favs: string[]) => {
-  const data = JSON.parse(localStorage.getItem('favorites') || '{}')
-  data[email] = favs
-  localStorage.setItem('favorites', JSON.stringify(data))
-}
+function getAuthHeaders() {
+  const token = getAuthToken()
 
-export const toggleFavorite = (id: string) => {
-  const user = getStoredUser()
-  if (!user) return
-
-  let favs = getFavorites(user.email)
-
-  if (favs.includes(id)) {
-    favs = favs.filter((f: string) => f !== id)
-  } else {
-    favs.push(id)
+  if (!token) {
+    throw new Error('You must be logged in')
   }
 
-  saveFavorites(user.email, favs)
+  return {
+    'Content-Type': 'application/json',
+    'auth-token': token
+  }
 }
 
-export const isFavorite = (id: string) => {
-  const user = getStoredUser()
-  if (!user) return false
+export function useFavorites() {
+  const favoriteBookIds = ref<string[]>([])
+  const favoriteBooks = ref<any[]>([])
+  const loading = ref(false)
+  const error = ref<string | null>(null)
 
-  const favs = getFavorites(user.email)
-  return favs.includes(id)
+  const fetchFavorites = async () => {
+    loading.value = true
+    error.value = null
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/user/favorites`, {
+        headers: getAuthHeaders()
+      })
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Unable to load favorites')
+      }
+
+      favoriteBookIds.value = result.data.favoriteBookIds ?? []
+      favoriteBooks.value = result.data.favoriteBooks ?? []
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : 'Unable to load favorites'
+    } finally {
+      loading.value = false
+    }
+  }
+
+  const toggleFavorite = async (bookId: string) => {
+    error.value = null
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/user/favorites/${bookId}`, {
+        method: 'POST',
+        headers: getAuthHeaders()
+      })
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Unable to update favorites')
+      }
+
+      favoriteBookIds.value = result.data.favoriteBookIds ?? []
+      favoriteBooks.value = result.data.favoriteBooks ?? []
+      return result.data.isFavorite as boolean
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : 'Unable to update favorites'
+      return false
+    }
+  }
+
+  const isFavorite = (bookId: string) => {
+    return favoriteBookIds.value.includes(bookId)
+  }
+
+  return {
+    favoriteBookIds,
+    favoriteBooks,
+    loading,
+    error,
+    fetchFavorites,
+    toggleFavorite,
+    isFavorite
+  }
 }

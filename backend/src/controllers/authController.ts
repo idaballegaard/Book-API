@@ -2,6 +2,7 @@
 import { type Request, type Response, type NextFunction } from "express";
 
 import jwt from "jsonwebtoken";
+import { JwtPayload } from "jsonwebtoken";
 
 import bcrypt from "bcrypt";
 import Joi, { ValidationResult } from "joi";
@@ -10,6 +11,13 @@ import Joi, { ValidationResult } from "joi";
 import { userModel } from "../models/userModel";
 import { User } from "../interfaces/user";
 import { connect, disconnect } from "../repository/database";
+import { bookModel } from "../models/bookModel";
+
+interface TokenPayload extends JwtPayload {
+  id: string;
+  name: string;
+  email: string;
+}
 
 /**
  * Register a new user
@@ -46,6 +54,7 @@ export async function registerUser(req: Request, res: Response) {
       name: req.body.name,
       email: req.body.email,
       password: passwordHashed,
+      favoriteBooks: [],
     });
 
     const savedUser = await userObject.save();
@@ -121,6 +130,9 @@ export async function loginUser(req: Request, res: Response) {
               id: userId,
               name: user.name,
               email: user.email,
+              favoriteBooks: (user.favoriteBooks ?? []).map(
+                (favoriteBookId) => favoriteBookId.toString(),
+              ),
             },
           },
         });
@@ -152,6 +164,119 @@ export function verifyToken(req: Request, res: Response, next: NextFunction) {
     next();
   } catch {
     res.status(401).send("Invalid Token");
+  }
+}
+
+function getTokenPayload(req: Request): TokenPayload {
+  const token = req.header("auth-token");
+
+  if (!token) {
+    throw new Error("Access denied.");
+  }
+
+  const decoded = jwt.verify(
+    token,
+    process.env.TOKEN_SECRET as string,
+  ) as TokenPayload;
+
+  return decoded;
+}
+
+export async function getFavoriteBooks(req: Request, res: Response) {
+  try {
+    const { id } = getTokenPayload(req);
+
+    await connect();
+
+    const user = await userModel.findById(id).populate("favoriteBooks");
+
+    if (!user) {
+      res.status(404).json({ error: "User not found." });
+      return;
+    }
+
+    res.status(200).json({
+      error: null,
+      data: {
+        favoriteBookIds: (user.favoriteBooks ?? []).map((favoriteBook: any) =>
+          typeof favoriteBook === "string"
+            ? favoriteBook
+            : favoriteBook._id.toString(),
+        ),
+        favoriteBooks: user.favoriteBooks ?? [],
+      },
+    });
+  } catch (error) {
+    res.status(500).send("Error retrieving favorite books. Error: " + error);
+  } finally {
+    await disconnect();
+  }
+}
+
+export async function toggleFavoriteBook(req: Request, res: Response) {
+  try {
+    const { id } = getTokenPayload(req);
+    const bookId = String(req.params.bookId ?? "");
+
+    if (!bookId) {
+      res.status(400).json({ error: "Book ID is required." });
+      return;
+    }
+
+    await connect();
+
+    const [user, book] = await Promise.all([
+      userModel.findById(id),
+      bookModel.findById(bookId),
+    ]);
+
+    if (!user) {
+      res.status(404).json({ error: "User not found." });
+      return;
+    }
+
+    if (!book) {
+      res.status(404).json({ error: "Book not found." });
+      return;
+    }
+
+    const favoriteBookIds = (user.favoriteBooks ?? []).map((favoriteBookId) =>
+      favoriteBookId.toString(),
+    );
+    const isAlreadyFavorite = favoriteBookIds.includes(bookId);
+
+    const updatedUser = await userModel
+      .findByIdAndUpdate(
+        id,
+        isAlreadyFavorite
+          ? { $pull: { favoriteBooks: bookId } }
+          : { $addToSet: { favoriteBooks: bookId } },
+        { new: true },
+      )
+      .populate("favoriteBooks");
+
+    if (!updatedUser) {
+      res.status(404).json({ error: "User not found." });
+      return;
+    }
+
+    res.status(200).json({
+      error: null,
+      data: {
+        isFavorite: !isAlreadyFavorite,
+        favoriteBookIds: (updatedUser.favoriteBooks ?? []).map(
+          (favoriteBook: any) =>
+            typeof favoriteBook === "string"
+              ? favoriteBook
+              : favoriteBook._id.toString(),
+        ),
+        favoriteBooks: updatedUser.favoriteBooks ?? [],
+      },
+    });
+  } catch (error) {
+    res.status(500).send("Error updating favorite books. Error: " + error);
+  } finally {
+    await disconnect();
   }
 }
 

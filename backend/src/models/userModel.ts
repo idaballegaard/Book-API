@@ -6,6 +6,7 @@ const userSchema = new Schema<User>({
   email: { type: String, required: true, min: 6, max: 255, unique: true },
   password: { type: String, required: true, min: 6, max: 255 },
   registerDate: { type: Date, required: true, default: Date.now },
+  favoriteBooks: [{ type: Schema.Types.ObjectId, ref: "Book", default: [] }],
 });
 
 export const userModel = model<User>("User", userSchema);

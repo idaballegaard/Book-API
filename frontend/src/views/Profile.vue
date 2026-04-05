@@ -1,51 +1,15 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { getFavorites } from '../modules/useFavorites'
 import { clearAuthState, getStoredUser } from '../modules/useAuth'
+import { useFavorites } from '../modules/useFavorites'
 
 const router = useRouter()
 
 const user = ref<any>(null)
-const favorites = ref<string[]>([])
+const { favoriteBooks, loading, error, fetchFavorites } = useFavorites()
 
-// ⚠️ samme test data som BookList
-const allBooks = [
-  {
-    _id: '1',
-    title: 'Harry Potter',
-    author: 'J.K. Rowling',
-    imageUrl: 'https://via.placeholder.com/200x300'
-  },
-  {
-    _id: '2',
-    title: 'The Hobbit',
-    author: 'J.R.R. Tolkien',
-    imageUrl: 'https://via.placeholder.com/200x300'
-  },
-  {
-    _id: '3',
-    title: 'Dune',
-    author: 'Frank Herbert',
-    imageUrl: 'https://via.placeholder.com/200x300'
-  },
-  {
-    _id: '4',
-    title: '1984',
-    author: 'George Orwell',
-    imageUrl: 'https://via.placeholder.com/200x300'
-  },
-  {
-    _id: '5',
-    title: 'Atomic Habits',
-    author: 'James Clear',
-    imageUrl: 'https://via.placeholder.com/200x300'
-  }
-]
-
-const favoriteBooks = ref<any[]>([])
-
-onMounted(() => {
+onMounted(async () => {
   user.value = getStoredUser()
 
   if (!user.value) {
@@ -53,12 +17,7 @@ onMounted(() => {
     return
   }
 
-  favorites.value = getFavorites(user.value.email)
-
-  // 🔥 match IDs med bøger
-  favoriteBooks.value = allBooks.filter(book =>
-    favorites.value.includes(book._id)
-  )
+  await fetchFavorites()
 })
 
 const goToBook = (id: string) => {
@@ -90,7 +49,15 @@ const logout = () => {
         ❤️ Your Favorites
       </h2>
 
-      <div v-if="favoriteBooks.length === 0" class="text-gray-400">
+      <div v-if="loading" class="text-gray-400">
+        Loading favorites...
+      </div>
+
+      <div v-else-if="error" class="text-red-400">
+        {{ error }}
+      </div>
+
+      <div v-else-if="favoriteBooks.length === 0" class="text-gray-400">
         No favorites yet.
       </div>
 

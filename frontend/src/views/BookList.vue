@@ -2,15 +2,22 @@
 import { onMounted, computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
-import { toggleFavorite, isFavorite } from '../modules/useFavorites'
+import { useFavorites } from '../modules/useFavorites'
 import { useBooks } from '../modules/useBooks'
 
 // 🔥 Hent bøger
 const router = useRouter()
 const { loading, error, books, fetchBooks } = useBooks()
+const {
+  loading: favoritesLoading,
+  error: favoritesError,
+  fetchFavorites,
+  toggleFavorite,
+  isFavorite
+} = useFavorites()
 
-onMounted(() => {
-  fetchBooks()
+onMounted(async () => {
+  await Promise.all([fetchBooks(), fetchFavorites()])
 })
 
 // Test data
@@ -60,8 +67,20 @@ onMounted(() => {
   // }
 // ])
 
-const handleFavorite = (id: string) => {
-  toggleFavorite(id)
+const favoritePendingIds = ref<string[]>([])
+
+const handleFavorite = async (id: string) => {
+  if (favoritePendingIds.value.includes(id)) {
+    return
+  }
+
+  favoritePendingIds.value.push(id)
+
+  try {
+    await toggleFavorite(id)
+  } finally {
+    favoritePendingIds.value = favoritePendingIds.value.filter((pendingId) => pendingId !== id)
+  }
 }
 
 const goToBook = (id: string) => {
@@ -88,13 +107,17 @@ const groupedBooks = computed(() => {
     </h1>
 
     <!-- ⏳ Loading -->
-    <div v-if="loading" class="text-center text-gray-400">
+    <div v-if="loading || favoritesLoading" class="text-center text-gray-400">
       Loading...
     </div>
 
     <!-- ❌ Error -->
     <div v-else-if="error" class="text-center text-red-500">
       {{ error }}
+    </div>
+
+    <div v-else-if="favoritesError" class="text-center text-red-500">
+      {{ favoritesError }}
     </div>
 
     <!-- ✅ Content -->
@@ -128,7 +151,8 @@ const groupedBooks = computed(() => {
               <!-- ❤️ FAVORITE -->
               <button
                 @click.stop="handleFavorite(book._id)"
-                class="absolute top-2 right-2 text-xl z-10"
+                :disabled="favoritePendingIds.includes(book._id) || favoritesLoading"
+                class="absolute top-2 right-2 text-xl z-10 disabled:opacity-60"
               >
                 <span v-if="isFavorite(book._id)">❤️</span>
                 <span v-else>🤍</span>

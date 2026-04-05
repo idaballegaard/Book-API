@@ -10,8 +10,10 @@ import {
   getHighestRatedBooks
 } from "./controllers/bookController";
 import {
+  getFavoriteBooks,
   loginUser,
   registerUser,
+  toggleFavoriteBook,
   verifyToken,
 } from "./controllers/authController";
 
@@ -94,6 +96,8 @@ router.get("/", (req: Request, res: Response) => {
  */
 router.post("/user/register", registerUser);
 router.post("/user/login", loginUser);
+router.get("/user/favorites", verifyToken, getFavoriteBooks);
+router.post("/user/favorites/:bookId", verifyToken, toggleFavoriteBook);
 
 // create
 /**
