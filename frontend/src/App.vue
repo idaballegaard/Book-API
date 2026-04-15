@@ -66,7 +66,7 @@ const logout = () => {
             Profile
           </router-link>
           
-          <!-- ✅ Hvis user findes -->
+          <!-- Hvis user findes -->
           <template v-if="user">
             <span class="text-gray-400 text-sm">
               {{ user.email }}
@@ -80,7 +80,7 @@ const logout = () => {
             </button>
           </template>
 
-          <!-- ❌ Hvis user IKKE findes -->
+          <!-- Hvis user IKKE findes -->
           <template v-else>
             <router-link to="/login" class="hover:text-purple-400 transition">
               Login
@@ -92,7 +92,7 @@ const logout = () => {
       </div>
     </nav>
 
-    <!-- 🔥 CONTENT -->
+    <!-- CONTENT -->
     <main class="flex-1">
       <router-view />
     </main>

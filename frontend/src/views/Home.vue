@@ -16,19 +16,19 @@ onMounted(async () => {
 <template>
   <div class="max-w-6xl mx-auto px-6 py-12">
 
-    <!-- 🎬 HERO -->
+    <!-- HERO -->
     <div class="relative rounded-2xl overflow-hidden mb-16">
 
-      <!-- 🖼️ DARK IMAGE -->
+      <!-- DARK IMAGE -->
       <img
         src="https://images.unsplash.com/photo-1507842217343-583bb7270b66"
         class="w-full h-[400px] object-cover grayscale brightness-50"
       />
 
-      <!-- 🌑 EXTRA OVERLAY -->
+      <!-- EXTRA OVERLAY -->
       <div class="absolute inset-0 bg-black/50"></div>
 
-      <!-- ✨ CONTENT -->
+      <!-- CONTENT -->
       <div class="absolute inset-0 flex flex-col justify-center items-center text-center px-6">
         <h1 class="text-5xl font-bold mb-4">
           Discover Your Next
@@ -49,7 +49,7 @@ onMounted(async () => {
 
     </div>
 
-    <!-- 📚 FEATURED -->
+    <!-- FEATURED -->
     <div>
       <h2 class="text-2xl font-semibold text-purple-400 mb-6">
         Highest Rated Books

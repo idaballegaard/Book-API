@@ -5,7 +5,7 @@ import { useRouter } from 'vue-router'
 import { useFavorites } from '../modules/useFavorites'
 import { useBooks } from '../modules/useBooks'
 
-// 🔥 Hent bøger
+// Hent bøger
 const router = useRouter()
 const { loading, error, books, fetchBooks } = useBooks()
 const {
@@ -87,7 +87,7 @@ const goToBook = (id: string) => {
   router.push(`/books/${id}`)
 }
 
-// 🔥 Gruppér efter genre
+// Gruppér efter genre
 const groupedBooks = computed(() => {
   return books.value.reduce((acc: any, book: any) => {
     const genre = book.genre || 'Other'
@@ -101,17 +101,17 @@ const groupedBooks = computed(() => {
 <template>
   <div class="p-8 max-w-6xl mx-auto">
     
-    <!-- 🔥 Title -->
+    <!-- Title -->
     <h1 class="text-3xl font-bold mb-8 text-purple-400">
-      📚 Explore Books
+      Explore Books
     </h1>
 
-    <!-- ⏳ Loading -->
+    <!-- Loading -->
     <div v-if="loading || favoritesLoading" class="text-center text-gray-400">
       Loading...
     </div>
 
-    <!-- ❌ Error -->
+    <!-- Error -->
     <div v-else-if="error" class="text-center text-red-500">
       {{ error }}
     </div>
@@ -120,10 +120,10 @@ const groupedBooks = computed(() => {
       {{ favoritesError }}
     </div>
 
-    <!-- ✅ Content -->
+    <!-- Content -->
     <div v-else>
 
-      <!-- 🎯 GENRES -->
+      <!-- GENRES -->
       <div
         v-for="(books, genre) in groupedBooks"
         :key="genre"
@@ -135,7 +135,7 @@ const groupedBooks = computed(() => {
           {{ genre }}
         </h2>
 
-        <!-- 📚 GRID -->
+        <!-- GRID -->
         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
 
           <div
@@ -148,7 +148,7 @@ const groupedBooks = computed(() => {
             <!-- CARD -->
             <div class="relative bg-gray-800 rounded-xl overflow-hidden shadow-md hover:shadow-2xl transition duration-300">
               
-              <!-- ❤️ FAVORITE -->
+              <!-- FAVORITE -->
               <button
                 @click.stop="handleFavorite(book._id)"
                 :disabled="favoritePendingIds.includes(book._id) || favoritesLoading"

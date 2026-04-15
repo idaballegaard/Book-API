@@ -29,13 +29,13 @@ onMounted(async () => {
 </script>
 
 <template>
-  <!-- 🌫️ BACKGROUND -->
+  <!-- BACKGROUND -->
   <div class="bg-gradient-to-b from-gray-900 to-black pt-12 pb-25 text-white">
     
-    <!-- 📦 CONTAINER -->
+    <!-- CONTAINER -->
     <div v-if="book" class="max-w-5xl mx-auto px-6">
 
-      <!-- 🧱 MAIN CARD -->
+      <!-- MAIN CARD -->
       <div class="bg-gray-800 rounded-2xl shadow-2xl border border-gray-700 p-8">
 
         <!-- HERO -->

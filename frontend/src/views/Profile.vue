@@ -43,7 +43,7 @@ const logout = () => {
       </p>
     </div>
 
-    <!-- ❤️ FAVORITES -->
+    <!-- FAVORITES -->
     <div>
       <h2 class="text-2xl font-semibold mb-6">
         ❤️ Your Favorites
@@ -94,7 +94,7 @@ const logout = () => {
 
     </div>
 
-    <!-- 🚪 LOGOUT -->
+    <!-- LOGOUT -->
     <div class="mt-12">
       <button
         @click="logout"
