@@ -37,7 +37,7 @@ jobs:
         run: npm run build
         working-directory: frontend
         env:
-          VITE_API_BASE_URL: ${{ vars.VITE_API_BASE_URL || secrets.VITE_API_BASE_URL }}
+          VITE_API_BASE_URL: ${{ vars.VITE_API_BASE_URL }}
           VITE_APP_BASE_PATH: /${{ github.event.repository.name }}/
         
       - name: Run tests
@@ -73,7 +73,7 @@ jobs:
         run: npm run build && cp dist/index.html dist/404.html && touch dist/.nojekyll
         working-directory: frontend
         env:
-          VITE_API_BASE_URL: ${{ vars.VITE_API_BASE_URL || secrets.VITE_API_BASE_URL }}
+          VITE_API_BASE_URL: ${{ vars.VITE_API_BASE_URL }}
           VITE_APP_BASE_PATH: /${{ github.event.repository.name }}/
 
       - name: Upload Pages artifact
