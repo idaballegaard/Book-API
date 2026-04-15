@@ -31,7 +31,7 @@ jobs:
       - name: Run tests
         run: npm test
         env:
-          DBHOST: localhost
+          DBHOST: ${{ secrets.DBHOST }}
         working-directory: backend
 
   deploy:
