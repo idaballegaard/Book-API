@@ -20,9 +20,13 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Install dependencies
+      - name: Install dependencies (frontend)
         run: npm install
         working-directory: frontend
+
+      - name: Install dependencies (backend)
+        run: npm install
+        working-directory: backend
 
       - name: Run tests
         run: npm test
