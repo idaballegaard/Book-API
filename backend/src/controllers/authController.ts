@@ -10,6 +10,7 @@ import Joi, { ValidationResult } from "joi";
 // Project imports
 import { userModel } from "../models/userModel";
 import { User } from "../interfaces/user";
+import { connect, disconnect } from "../repository/database";
 import { bookModel } from "../models/bookModel";
 
 interface TokenPayload extends JwtPayload {
@@ -33,6 +34,8 @@ export async function registerUser(req: Request, res: Response) {
       res.status(400).json({ error: error.details[0].message });
       return;
     }
+
+    await connect();
 
     // check if the email is already registered
     const emailExist = await userModel.findOne({ email: req.body.email });
@@ -58,6 +61,8 @@ export async function registerUser(req: Request, res: Response) {
     res.status(201).json({ error: null, data: savedUser._id });
   } catch (error) {
     res.status(500).send("Error registering user. Error: " + error);
+  } finally {
+    await disconnect();
   }
 }
 
@@ -78,6 +83,9 @@ export async function loginUser(req: Request, res: Response) {
       res.status(400).json({ error: error.details[0].message });
       return;
     }
+
+    // find the user in the repository
+    await connect();
 
     const user: User | null = await userModel.findOne({
       email: req.body.email,
@@ -131,6 +139,8 @@ export async function loginUser(req: Request, res: Response) {
     }
   } catch (error) {
     res.status(500).send("Error logging in user. Error: " + error);
+  } finally {
+    await disconnect();
   }
 }
 
@@ -176,6 +186,8 @@ export async function getFavoriteBooks(req: Request, res: Response) {
   try {
     const { id } = getTokenPayload(req);
 
+    await connect();
+
     const user = await userModel.findById(id).populate("favoriteBooks");
 
     if (!user) {
@@ -196,6 +208,8 @@ export async function getFavoriteBooks(req: Request, res: Response) {
     });
   } catch (error) {
     res.status(500).send("Error retrieving favorite books. Error: " + error);
+  } finally {
+    await disconnect();
   }
 }
 
@@ -208,6 +222,8 @@ export async function toggleFavoriteBook(req: Request, res: Response) {
       res.status(400).json({ error: "Book ID is required." });
       return;
     }
+
+    await connect();
 
     const [user, book] = await Promise.all([
       userModel.findById(id),
@@ -259,6 +275,8 @@ export async function toggleFavoriteBook(req: Request, res: Response) {
     });
   } catch (error) {
     res.status(500).send("Error updating favorite books. Error: " + error);
+  } finally {
+    await disconnect();
   }
 }
 

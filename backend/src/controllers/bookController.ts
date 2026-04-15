@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { bookModel } from "../models/bookModel";
+import { connect, disconnect } from "../repository/database";
 import { buildDynamicQuery } from "./dynamicQueryBuilder";
 
 // CRUD - create, read/get, update, delete
@@ -14,12 +15,16 @@ export async function createBook(req: Request, res: Response): Promise<void> {
   const data = req.body;
 
   try {
+    await connect();
+
     const book = new bookModel(data);
     const result = await book.save();
 
     res.status(201).send(result);
   } catch (error) {
     res.status(500).send("Error creating a book. Error: " + error);
+  } finally {
+    await disconnect();
   }
 }
 
@@ -30,11 +35,15 @@ export async function createBook(req: Request, res: Response): Promise<void> {
  */
 export async function getAllBooks(req: Request, res: Response) {
   try {
+    await connect();
+
     const result = await bookModel.find({});
 
     res.status(200).send(result);
   } catch (error) {
     res.status(500).send("Error retrieving books. Error: " + error);
+  } finally {
+    await disconnect();
   }
 }
 
@@ -45,12 +54,16 @@ export async function getAllBooks(req: Request, res: Response) {
  */
 export async function getBooksById(req: Request, res: Response) {
   try {
+    await connect();
+
     const id = req.params.id;
     const result = await bookModel.find({ _id: id });
 
     res.status(200).send(result);
   } catch (error) {
     res.status(500).send("Error retrieving book by ID. Error: " + error);
+  } finally {
+    await disconnect();
   }
 }
 
@@ -63,6 +76,8 @@ export async function updateBookById(req: Request, res: Response) {
   const id = req.params.id;
 
   try {
+    await connect();
+
     const result = await bookModel.findByIdAndUpdate(id, req.body);
 
     if (!result) {
@@ -72,6 +87,8 @@ export async function updateBookById(req: Request, res: Response) {
     }
   } catch (error) {
     res.status(500).send("Error updating book by ID. Error: " + error);
+  } finally {
+    await disconnect();
   }
 }
 
@@ -84,6 +101,8 @@ export async function deleteBookById(req: Request, res: Response) {
   const id = req.params.id;
 
   try {
+    await connect();
+
     const result = await bookModel.findByIdAndDelete(id);
 
     if (!result) {
@@ -93,6 +112,8 @@ export async function deleteBookById(req: Request, res: Response) {
     }
   } catch (error) {
     res.status(500).send("Error deleting book by ID. Error: " + error);
+  } finally {
+    await disconnect();
   }
 }
 
@@ -106,6 +127,8 @@ export async function getBooksByQuery(
   res: Response,
 ): Promise<void> {
   try {
+    await connect();
+
     // api/books/key/value
 
     const key: any = req.params.key;
@@ -118,6 +141,8 @@ export async function getBooksByQuery(
     res.status(200).json(result);
   } catch (err) {
     res.status(500).json("error retrieving book by query." + err);
+  } finally {
+    await disconnect();
   }
 }
 
@@ -131,6 +156,8 @@ export async function getBooksByQueryGeneric(
   res: Response,
 ): Promise<void> {
   try {
+    await connect();
+
     // api/books/query
 
     const body = req.body;
@@ -140,6 +167,8 @@ export async function getBooksByQueryGeneric(
     res.status(200).json(result);
   } catch (err) {
     res.status(500).json("error retrieving book by query." + err);
+  } finally {
+    await disconnect();
   }
 }
 
@@ -150,10 +179,14 @@ export async function getBooksByQueryGeneric(
  */
 export async function getHighestRatedBooks(req: Request, res: Response) {
   try {
+    await connect();
+
     const result = await bookModel.find({}).sort({ rating: -1 }).limit(4);
 
     res.status(200).json(result);
   } catch (err) {
     res.status(500).json("error retrieving highest rated books." + err);
+  } finally {
+    await disconnect();
   }
 }

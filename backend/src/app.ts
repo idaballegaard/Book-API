@@ -1,55 +1,48 @@
-import express, { Application, NextFunction, Request, Response } from "express";
+import express, { Application, Request, Response } from "express";
 import dotenvFlow from "dotenv-flow";
-import { connect } from "./repository/database";
+import { testConnection } from "./repository/database";
 import routes from "./routes";
 import { setupDocs } from "./util/documentation";
-import cors, { CorsOptions } from "cors";
+import cors from "cors";
 
 dotenvFlow.config();
 
 // create express application
 const app: Application = express();
 
-const allowedOrigins = new Set(
-  (process.env.CORS_ALLOWED_ORIGINS ??
-    [
-      "http://localhost:5173",
-      "http://127.0.0.1:5173",
-      "https://idaballegaard.github.io",
-    ].join(","))
-    .split(",")
-    .map((origin) => origin.trim())
-    .filter(Boolean),
-);
+/**
+ * Setup CORS handling for the application
+ */
+function setUpCors() {
+  app.use(
+    cors({
+      // Allow request from any origin
+      origin: "*",
 
-const corsOptions: CorsOptions = {
-  origin(origin, callback) {
-    if (!origin || allowedOrigins.has(origin)) {
-      callback(null, true);
-      return;
-    }
+      // Allow methods GET, PUT, POST, DELETE
+      methods: "GET, PUT, POST, DELETE",
 
-    callback(new Error(`Origin ${origin} is not allowed by CORS`));
-  },
-  methods: ["GET", "PUT", "POST", "DELETE", "OPTIONS"],
-  allowedHeaders: [
-    "auth-token",
-    "Origin",
-    "X-Requested-With",
-    "Content-Type",
-    "Accept",
-    "Authorization",
-  ],
-  credentials: false,
-  optionsSuccessStatus: 204,
-};
+      // Allow headers
+      allowedHeaders: [
+        "auth-token",
+        "Origin",
+        "X-Requested-Width",
+        "Content-Type",
+        "Accept",
+      ],
+
+      // Allow credentials
+      credentials: true,
+    }),
+  );
+}
 
 /**
  * Start the server
  */
-export async function startServer() {
-  app.use(cors(corsOptions));
-  app.options("*", cors(corsOptions));
+export function startServer() {
+  // setup CORS handling
+  setUpCors();
 
   //JSON body parser middleware
   app.use(express.json());
@@ -59,26 +52,8 @@ export async function startServer() {
 
   setupDocs(app);
 
-  app.use((req: Request, res: Response) => {
-    res.status(404).json({ error: "Route not found" });
-  });
-
-  app.use(
-    (error: Error, req: Request, res: Response, next: NextFunction) => {
-      if (res.headersSent) {
-        next(error);
-        return;
-      }
-
-      res.status(500).json({
-        error: "Internal server error",
-        message: error.message,
-      });
-    },
-  );
-
-  await connect();
-  console.log("Database connection test successful");
+  // test database connection
+  testConnection();
 
   // start server
   const PORT: number = parseInt(process.env.PORT as string) || 4000;
