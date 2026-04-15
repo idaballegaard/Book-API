@@ -5,13 +5,13 @@ on:
     branches: [main]
   workflow_dispatch:
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
+# permissions:
+#   contents: read
+#   pages: write
+#   id-token: write
     
 jobs:
-  build-test:
+  frontend-build:
     runs-on: ubuntu-latest
 
     steps:
@@ -25,13 +25,9 @@ jobs:
         with:
           node-version: '24'
 
-      - name: Install dependencies (frontend)
+      - name: Install dependencies
         run: npm install
         working-directory: frontend
-
-      - name: Install dependencies (backend)
-        run: npm install
-        working-directory: backend
 
       - name: Build frontend
         run: npm run build
@@ -39,7 +35,32 @@ jobs:
         env:
           VITE_API_BASE_URL: ${{ vars.VITE_API_BASE_URL }}
           VITE_APP_BASE_PATH: /${{ github.event.repository.name }}/
-        
+
+      - name: Upload frontend artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist
+          path: frontend/dist
+          if-no-files-found: error
+
+  backend-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Install dependencies
+        run: npm install
+        working-directory: backend
+
       - name: Run tests
         run: npm test
         env:
@@ -47,34 +68,18 @@ jobs:
         working-directory: backend
 
   deploy-frontend:
-    needs: [build-test]
+    needs: [frontend-build]
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-
-      - name: Install dependencies (frontend)
-        run: npm install
-        working-directory: frontend
-
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
 
-      - name: Build frontend for GitHub Pages
-        run: npm run build && cp dist/index.html dist/404.html && touch dist/.nojekyll
-        working-directory: frontend
-        env:
-          VITE_API_BASE_URL: ${{ vars.VITE_API_BASE_URL }}
-          VITE_APP_BASE_PATH: /${{ github.event.repository.name }}/
+      - name: Download frontend artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-dist
+          path: frontend/dist
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
@@ -86,13 +91,10 @@ jobs:
         uses: actions/deploy-pages@v4
 
   deploy-backend:
-    needs: [build-test]
+    needs: [backend-build]
     runs-on: ubuntu-latest
     
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
       - name: Deploy to production (backend)
         uses: johnbeynon/render-deploy-action@v0.0.8
         with:
