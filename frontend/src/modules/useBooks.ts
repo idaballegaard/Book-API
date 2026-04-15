@@ -1,4 +1,5 @@
 import { ref } from 'vue'
+import { API_BASE_URL } from '../config/api'
 //import type { Book } from '../../../backend/src/interfaces/book'
 
 export function useBooks() {
@@ -11,7 +12,7 @@ export function useBooks() {
     error.value = null
 
     try {
-      const response = await fetch('http://localhost:4000/api/books')
+      const response = await fetch(`${API_BASE_URL}/books`)
       const data = await response.json()
 
       books.value = data
@@ -27,7 +28,7 @@ export function useBooks() {
     error.value = null
 
     try {
-      const response = await fetch(`http://localhost:4000/api/books/${id}`)
+      const response = await fetch(`${API_BASE_URL}/books/${id}`)
       const data = await response.json()
 
       return data[0];
@@ -43,7 +44,7 @@ export function useBooks() {
     error.value = null
     
     try {
-      const response = await fetch('http://localhost:4000/api/books/highest-rated')
+      const response = await fetch(`${API_BASE_URL}/books/highest-rated`)
       const data = await response.json()
 
       return data;

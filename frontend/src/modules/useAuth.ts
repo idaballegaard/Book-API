@@ -1,5 +1,6 @@
+import { API_BASE_URL } from '../config/api'
+
 const AUTH_STORAGE_KEY = 'auth'
-const API_BASE_URL = 'http://localhost:4000/api'
 
 export interface AuthUser {
   id: string
