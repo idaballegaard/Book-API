@@ -35,7 +35,7 @@ jobs:
         working-directory: backend
 
   deploy:
-    needs: [test]
+    needs: [build-test]
     runs-on: ubuntu-latest
     
     steps:
