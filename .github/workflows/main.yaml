@@ -30,7 +30,7 @@ jobs:
 
       - name: Run tests
         run: npm test
-        environment:
+        env:
           DBHOST: localhost
         working-directory: backend
 
