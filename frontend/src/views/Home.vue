@@ -32,7 +32,7 @@ onMounted(async () => {
       <div class="absolute inset-0 flex flex-col justify-center items-center text-center px-6">
         <h1 class="text-5xl font-bold mb-4">
           Discover Your Next
-          <span class="text-purple-400">Favorite Book</span>
+          <span class="text-red-400">Favorite Book</span>
         </h1>
 
         <p class="text-gray-300 max-w-xl mx-auto mb-6">
