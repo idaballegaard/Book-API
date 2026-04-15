@@ -6,7 +6,7 @@ import { clearAuthState, getStoredUser } from './modules/useAuth'
 const router = useRouter()
 const route = useRoute()
 
-const user = ref(null)
+const user = ref()
 
 const loadUser = () => {
   user.value = getStoredUser()
