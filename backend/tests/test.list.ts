@@ -8,7 +8,7 @@ import userTestCollection from "./user.test";
 
 // Model imports for database cleanup
 import { userModel } from "../src/models/userModel";
-import { bookModel } from "../src/models/bookModelModel";
+import { bookModel } from "../src/models/bookModel";
 
 import DotenvFlow from "dotenv-flow";
 import { connect, disconnect } from "../src/repository/database";
