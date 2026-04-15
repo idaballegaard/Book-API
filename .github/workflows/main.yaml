@@ -62,10 +62,6 @@ jobs:
         with:
           node-version: '24'
 
-      - name: Install dependencies (frontend)
-        run: npm ci
-        working-directory: frontend
-
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
 
