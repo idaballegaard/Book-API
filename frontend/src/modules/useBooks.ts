@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 import { API_BASE_URL } from '../config/api'
-//import type { Book } from '../../../backend/src/interfaces/book'
+
 
 export function useBooks() {
   const books = ref<any[]>([])
