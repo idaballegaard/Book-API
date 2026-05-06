@@ -19,6 +19,11 @@ interface LoginResponse {
   data?: AuthState
 }
 
+interface RegisterResponse {
+  error: string | null
+  data?: string
+}
+
 export function getAuthState(): AuthState | null {
   const storedAuth = localStorage.getItem(AUTH_STORAGE_KEY)
 
@@ -68,4 +73,22 @@ export async function loginUser(email: string, password: string): Promise<AuthUs
 
   localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(result.data))
   return result.data.user
+}
+
+export async function registerUser(name: string, email: string, password: string): Promise<AuthUser> {
+  const response = await fetch(`${API_BASE_URL}/user/register`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ name, email, password })
+  })
+
+  const result = (await response.json()) as RegisterResponse
+
+  if (!response.ok || !result.data) {
+    throw new Error(result.error || 'Unable to register')
+  }
+
+  return loginUser(email, password)
 }

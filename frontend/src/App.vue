@@ -85,6 +85,10 @@ const logout = () => {
             <router-link to="/login" class="hover:text-purple-400 transition">
               Login
             </router-link>
+
+            <router-link to="/register" class="hover:text-purple-400 transition">
+              Register
+            </router-link>
           </template>
 
         </div>
