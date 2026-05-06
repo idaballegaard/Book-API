@@ -28,12 +28,14 @@ const routes = [
   {
     path: '/login',
     name: 'Login',
-    component: Login
+    component: Login,
+    meta: { guestOnly: true }
   },
   {
     path: '/register',
     name: 'Register',
-    component: Register
+    component: Register,
+    meta: { guestOnly: true }
   },
   {
     path: '/profile',
@@ -50,8 +52,12 @@ const router = createRouter({
 
 // ROUTE GUARD
 router.beforeEach((to, _, next) => {
-  if (to.meta.requiresAuth && !isAuthenticated()) {
+  const authenticated = isAuthenticated()
+
+  if (to.meta.requiresAuth && !authenticated) {
     next('/login')
+  } else if (to.meta.guestOnly && authenticated) {
+    next('/')
   } else {
     next()
   }

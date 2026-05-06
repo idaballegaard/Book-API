@@ -61,20 +61,20 @@ const logout = () => {
           <router-link to="/books" class="hover:text-purple-400 transition">
             Genrer
           </router-link>
-
-          <router-link to="/profile" class="hover:text-purple-400 transition">
-            Profile
-          </router-link>
           
           <!-- Hvis user findes -->
           <template v-if="user">
+            <router-link to="/profile" class="hover:text-purple-400 transition">
+              Profile
+            </router-link>
+
             <span class="text-gray-400 text-sm">
               {{ user.email }}
             </span>
 
             <button
               @click="logout"
-              class="hover:text-purple-400 transition"
+              class="rounded-lg border border-purple-500 px-3 py-1 text-purple-300 hover:bg-purple-500 hover:text-white transition"
             >
               Logout
             </button>
