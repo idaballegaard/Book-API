@@ -3,10 +3,11 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { clearAuthState, getStoredUser } from '../modules/useAuth'
 import { useFavorites } from '../modules/useFavorites'
+import ReadingGoalsSection from '../components/ReadingGoalsSection.vue'
 
 const router = useRouter()
-
 const user = ref<any>(null)
+
 const { favoriteBooks, loading, error, fetchFavorites } = useFavorites()
 
 onMounted(async () => {
@@ -42,6 +43,9 @@ const logout = () => {
         {{ user?.email }}
       </p>
     </div>
+
+    <!-- READING GOALS -->
+    <ReadingGoalsSection :user="user" :favoriteBooks="favoriteBooks" />
 
     <!-- FAVORITES -->
     <div>
