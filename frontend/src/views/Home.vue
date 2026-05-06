@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import BookCard from '../components/BookCard.vue'
 import { useBooks } from '../modules/useBooks'
 
 const router = useRouter()
 const { fetchHighestRatedBooks } = useBooks()
-const featuredBooks = ref<any>(null)
+const featuredBooks = ref<any[]>([])
 
 onMounted(async () => {
   featuredBooks.value = await fetchHighestRatedBooks()
-  console.log('Featured Books:', featuredBooks.value)
 })
 </script>
 
@@ -57,27 +57,12 @@ onMounted(async () => {
 
       <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
 
-        <div
+        <BookCard
           v-for="book in featuredBooks"
           :key="book._id"
-          @click="router.push(`/books/${book._id}`)"
-          class="cursor-pointer group"
-        >
-          <div class="bg-gray-800 rounded-xl overflow-hidden shadow-md hover:shadow-2xl transition">
-
-            <img
-              :src="book.imageUrl"
-              class="w-full h-64 object-cover group-hover:scale-105 transition"
-            />
-
-            <div class="p-3">
-              <h3 class="text-sm font-semibold group-hover:text-purple-400 transition">
-                {{ book.title }}
-              </h3>
-            </div>
-
-          </div>
-        </div>
+          :book="book"
+          @select="router.push(`/books/${book._id}`)"
+        />
 
       </div>
     </div>

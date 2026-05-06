@@ -2,13 +2,18 @@
 import { onMounted, computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
+import BookCard from '../components/BookCard.vue'
+import SearchFilters from '../components/SearchFilters.vue'
 import { useFavorites } from '../modules/useFavorites'
 import { useBooks } from '../modules/useBooks'
 
 // Hent bøger
 const router = useRouter()
 const { loading, error, books, fetchBooks } = useBooks()
-const selectedGenre = ref('')
+const searchTitle = ref('')
+const searchGenre = ref('')
+const browseGenre = ref('')
+const sortBy = ref('rating')
 const {
   loading: favoritesLoading,
   error: favoritesError,
@@ -41,11 +46,39 @@ const goToBook = (id: string) => {
   router.push(`/books/${id}`)
 }
 
+const filteredAndSortedBooks = computed(() => {
+  const filtered = books.value.filter((book) => {
+    const titleMatch = book.title.toLowerCase().includes(searchTitle.value.toLowerCase())
+    const genreMatch = !searchGenre.value || book.genre?.toLowerCase().includes(searchGenre.value.toLowerCase())
+
+    return titleMatch && genreMatch
+  })
+
+  if (sortBy.value === 'rating') {
+    filtered.sort((firstBook, secondBook) => (secondBook.rating || 0) - (firstBook.rating || 0))
+  } else {
+    filtered.sort(
+      (firstBook, secondBook) =>
+        new Date(secondBook.publishedDate || 0).getTime() - new Date(firstBook.publishedDate || 0).getTime()
+    )
+  }
+
+  return filtered
+})
+
+const hasActiveFilters = computed(() => {
+  return Boolean(searchTitle.value.trim() || searchGenre.value || sortBy.value !== 'rating')
+})
+
 // Få de højeste ratede bøger
 const highestRatedBooks = computed(() => {
   return [...books.value]
     .sort((a, b) => (b.rating || 0) - (a.rating || 0))
     .slice(0, 4)
+})
+
+const topSectionBooks = computed(() => {
+  return hasActiveFilters.value ? filteredAndSortedBooks.value : highestRatedBooks.value
 })
 
 // Få unikke genres
@@ -54,17 +87,17 @@ const availableGenres = computed(() => {
   return Array.from(genres).sort()
 })
 
-// Filtrer bøger efter valgt genre
-const booksBySelectedGenre = computed(() => {
-  if (!selectedGenre.value) {
+const booksForBrowse = computed(() => {
+  if (!browseGenre.value) {
     return books.value
   }
-  return books.value.filter(book => book.genre === selectedGenre.value)
+
+  return books.value.filter((book) => book.genre === browseGenre.value)
 })
 
 // Gruppér efter genre
 const groupedBooks = computed(() => {
-  return booksBySelectedGenre.value.reduce((acc: any, book: any) => {
+  return booksForBrowse.value.reduce((acc: any, book: any) => {
     const genre = book.genre || 'Other'
     if (!acc[genre]) acc[genre] = []
     acc[genre].push(book)
@@ -81,19 +114,16 @@ const groupedBooks = computed(() => {
       Explore Books
     </h1>
 
-    <!-- Search bar -->
-    <div class="mb-8">
-      <div class="relative">
-        <input
-          type="text"
-          placeholder="Search for books, authors or genres..."
-          class="w-full p-3 pl-10 rounded-lg bg-gray-800 text-white outline-none focus:ring-2 focus:ring-purple-500"
-        />
-        <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-        </svg>
-      </div>
-    </div>
+    <SearchFilters
+      :searchTitle="searchTitle"
+      :searchGenre="searchGenre"
+      :sortBy="sortBy"
+      :availableGenres="availableGenres"
+      :resultCount="filteredAndSortedBooks.length"
+      @update:searchTitle="searchTitle = $event"
+      @update:searchGenre="searchGenre = $event"
+      @update:sortBy="sortBy = $event"
+    />
 
     <!-- Loading -->
     <div v-if="loading || favoritesLoading" class="text-center text-gray-400">
@@ -112,62 +142,42 @@ const groupedBooks = computed(() => {
     <!-- Content -->
     <div v-else>
 
-      <!-- HIGHEST RATED SECTION -->
+      <!-- TOP SECTION -->
       <div class="mb-12">
         <div class="flex items-center justify-between mb-6">
           <h2 class="text-2xl font-semibold text-white">
-            Highest Rated
+            {{ hasActiveFilters ? 'Search Results' : 'Highest Rated' }}
           </h2>
-          <router-link to="/books/highest-rated" class="text-purple-400 hover:text-purple-300 text-sm">
+          <router-link
+            v-if="!hasActiveFilters"
+            to="/books/highest-rated"
+            class="text-purple-400 hover:text-purple-300 text-sm"
+          >
             View all
           </router-link>
         </div>
 
-        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
-          <div
-            v-for="book in highestRatedBooks"
+        <div
+          v-if="topSectionBooks.length === 0"
+          class="rounded-xl border border-gray-800 bg-gray-900/60 p-6 text-gray-400"
+        >
+          No books found for your current filters.
+        </div>
+
+        <div
+          v-else
+          class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6"
+        >
+          <BookCard
+            v-for="book in topSectionBooks"
             :key="book._id"
-            @click="goToBook(book._id)"
-            class="cursor-pointer group"
-          >
-            <!-- CARD -->
-            <div class="relative bg-gray-800 rounded-xl overflow-hidden shadow-md hover:shadow-2xl transition duration-300">
-              
-              <!-- FAVORITE -->
-              <button
-                @click.stop="handleFavorite(book._id)"
-                :disabled="favoritePendingIds.includes(book._id) || favoritesLoading"
-                class="absolute top-2 right-2 text-xl z-10 disabled:opacity-60"
-              >
-                <span v-if="isFavorite(book._id)">❤️</span>
-                <span v-else>🤍</span>
-              </button>
-
-              <!-- COVER -->
-              <div class="overflow-hidden">
-                <img
-                  :src="book.imageUrl"
-                  alt="Book cover"
-                  class="w-full h-64 object-cover group-hover:scale-105 transition duration-300"
-                />
-              </div>
-
-              <!-- INFO -->
-              <div class="p-3">
-                <h3 class="truncate text-sm font-semibold group-hover:text-purple-400 transition">
-                  {{ book.title }}
-                </h3>
-
-                <p class="text-xs text-gray-400">
-                  {{ book.author }}
-                </p>
-
-                <p class="text-purple-400 text-sm mt-1">
-                  ⭐ {{ book.rating }}
-                </p>
-              </div>
-            </div>
-          </div>
+            :book="book"
+            :showFavorite="true"
+            :favoriteActive="isFavorite(book._id)"
+            :favoriteDisabled="favoritePendingIds.includes(book._id) || favoritesLoading"
+            @select="goToBook(book._id)"
+            @toggleFavorite="handleFavorite(book._id)"
+          />
         </div>
       </div>
 
@@ -179,10 +189,10 @@ const groupedBooks = computed(() => {
 
         <div class="flex flex-wrap gap-3 mb-8">
           <button
-            @click="selectedGenre = ''"
+            @click="browseGenre = ''"
             :class="[
               'px-4 py-2 rounded-lg font-semibold transition',
-              selectedGenre === ''
+              browseGenre === ''
                 ? 'bg-purple-500 text-white'
                 : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
             ]"
@@ -193,10 +203,10 @@ const groupedBooks = computed(() => {
           <button
             v-for="genre in availableGenres"
             :key="genre"
-            @click="selectedGenre = genre"
+            @click="browseGenre = genre"
             :class="[
               'px-4 py-2 rounded-lg font-semibold transition',
-              selectedGenre === genre
+              browseGenre === genre
                 ? 'bg-purple-500 text-white'
                 : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
             ]"
@@ -227,53 +237,16 @@ const groupedBooks = computed(() => {
           <!-- GRID -->
           <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
 
-            <div
+            <BookCard
               v-for="book in genreBooks"
               :key="book._id"
-              @click="goToBook(book._id)"
-              class="cursor-pointer group"
-            >
-
-              <!-- CARD -->
-              <div class="relative bg-gray-800 rounded-xl overflow-hidden shadow-md hover:shadow-2xl transition duration-300">
-                
-                <!-- FAVORITE -->
-                <button
-                  @click.stop="handleFavorite(book._id)"
-                  :disabled="favoritePendingIds.includes(book._id) || favoritesLoading"
-                  class="absolute top-2 right-2 text-xl z-10 disabled:opacity-60"
-                >
-                  <span v-if="isFavorite(book._id)">❤️</span>
-                  <span v-else>🤍</span>
-                </button>
-
-                <!-- COVER -->
-                <div class="overflow-hidden">
-                  <img
-                    :src="book.imageUrl"
-                    alt="Book cover"
-                    class="w-full h-64 object-cover group-hover:scale-105 transition duration-300"
-                  />
-                </div>
-
-                <!-- INFO -->
-                <div class="p-3">
-                  <h3 class="truncate text-sm font-semibold group-hover:text-purple-400 transition">
-                    {{ book.title }}
-                  </h3>
-
-                  <p class="text-xs text-gray-400">
-                    {{ book.author }}
-                  </p>
-
-                  <p class="text-purple-400 text-sm mt-1">
-                    ⭐ {{ book.rating }}
-                  </p>
-                </div>
-
-              </div>
-
-            </div>
+              :book="book"
+              :showFavorite="true"
+              :favoriteActive="isFavorite(book._id)"
+              :favoriteDisabled="favoritePendingIds.includes(book._id) || favoritesLoading"
+              @select="goToBook(book._id)"
+              @toggleFavorite="handleFavorite(book._id)"
+            />
 
           </div>
 
